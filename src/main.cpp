@@ -4,6 +4,8 @@ int main(){
     int myvar;
     myvar = 0;
     printf("hello world");
-    myvar = 10;
+    for(int i = 0; i<10; i++){
+        myvar++;
+    }
     return 0;
 }

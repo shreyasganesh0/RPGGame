@@ -14,12 +14,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Define build types if not specified
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
         "Choose the build type (Debug or Release)" FORCE)
 endif()
 
+# Enable debug symbols for memory inspection
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+
 # Set output directories for binaries and libraries
-# This ensures all executables are placed in bin/ inside the build directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -43,10 +45,6 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 endif()
 
-# If you need to link system frameworks or libraries on macOS, you could do:
-# find_library(COCOA_LIBRARY Cocoa)
-# target_link_libraries(${PROJECT_NAME} PRIVATE ${COCOA_LIBRARY})
-
 # For debugging:
 # cmake -DCMAKE_BUILD_TYPE=Debug ..
 # For release:
@@ -55,4 +53,4 @@ endif()
 # After configuring with cmake, build:
 # make         # On Linux/macOS
 # or
-# cmake --build . --config Release  # On multi-config generators like Xcode
+# cmake --build . --config Debug  # On multi-config generators like Xcode
