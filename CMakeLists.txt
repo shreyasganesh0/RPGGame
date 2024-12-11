@@ -27,7 +27,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Gather all .cpp source files
-file(GLOB_RECURSE SOURCE_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE SOURCE_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp ${CMAKE_SOURCE_DIR}/src/*.mm)
 
 # Create the executable target
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
@@ -43,6 +43,15 @@ if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
+endif()
+
+if(APPLE)
+    find_library(COCOA_LIBRARY Cocoa)
+    if(COCOA_LIBRARY)
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${COCOA_LIBRARY})
+    else()
+        message(FATAL_ERROR "Cocoa framework not found")
+    endif()
 endif()
 
 # For debugging:
