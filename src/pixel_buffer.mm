@@ -5,14 +5,16 @@ uint32_t* create_buffer (){
     
     int y{0};
 
-    uint8_t red{0};
+    uint8_t red{200};
     uint8_t green{0};
     uint8_t blue{100};
     for(; y<HEIGHT; y++){
-        for (int x{0}; x<WIDTH; x++){
-
-            pixel_t pix{red, green, blue};//TODO: check performance difference between pixel_t and directly assigning using manip of colors
-            back_buffer[y*WIDTH+x] = pix;
+        for (float x{0}; x<WIDTH; x++){
+            pixel_t pix{
+                    static_cast<uint8_t>(red*(x/WIDTH)),
+                    green,
+                    static_cast<uint8_t>(blue*((WIDTH-x)/WIDTH))};//TODO: check performance difference between pixel_t and directly assigning using manip of colors
+            back_buffer[y*WIDTH+(int)(x)] = pix;
         }
     }
 
