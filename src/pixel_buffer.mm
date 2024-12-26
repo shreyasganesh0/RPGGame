@@ -13,8 +13,8 @@ uint32_t* create_buffer (){
             pixel_t pix{
                     static_cast<uint8_t>(red*(x/WIDTH)),
                     green,
-                    static_cast<uint8_t>(blue*((WIDTH-x)/WIDTH))};//TODO: check performance difference between pixel_t and directly assigning using manip of colors
-            back_buffer[y*WIDTH+(int)(x)] = pix;
+                    static_cast<uint8_t>(blue*(((WIDTH)-x)/WIDTH))};//TODO: check performance difference between pixel_t and directly assigning using manip of colors
+            back_buffer[y*(WIDTH)+int(x)] = pix;
         }
     }
 
