@@ -12,5 +12,5 @@ typedef struct Pixel{
         return pixel;
     }
 } pixel_t;
-uint32_t* create_buffer();
+void populate_buffer(uint32_t*, int, int);
 #endif

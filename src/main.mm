@@ -1,14 +1,34 @@
 #include <stdio.h>
 #include <dispatch/dispatch.h>
-#import <Cocoa/Cocoa.h> // Correct import (includes Foundation)
+#include <Cocoa/Cocoa.h> // Correct import (includes Foundation)
 #include "types.h"
 #include "pixel_buffer.h"
+#include <sys/mman.h>
+
+uint32_t * create_buffer(int width, int height){
+    size_t size = width*height*(sizeof(uint32_t));
+
+    uint32_t *buffer = (uint32_t *)mmap(NULL, // Let system choose address
+                                        size, 
+                                        PROT_READ | PROT_WRITE, // Memory protection: Read and Write
+                                        MAP_PRIVATE | MAP_ANON, // Anonymous mapping, not backed by a file
+                                        -1, // File desc (not used since MAP_ANON) 
+                                        0 // offset from address space 
+                                        );
+    if (buffer == MAP_FAILED){
+        return NULL;
+    }
+    return buffer;
+}
+
 
 @interface CustomView : NSView
 @property (nonatomic, retain) NSTimer *timer;
 @property uint32_t *bitmap_buffer;
 @property int buffer_width;
 @property int buffer_height;
+@property int x_offset;
+@property int y_offset;
 @end
 
 @implementation CustomView
@@ -48,6 +68,12 @@
 }
 
 - (void)timerFired:(NSTimer *)timer {
+
+    populate_buffer(self.bitmap_buffer, self.x_offset, self.y_offset);
+
+    self.x_offset++;
+    self.y_offset++;
+
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setNeedsDisplay:YES]; // Redraw the entire view
     });
@@ -69,7 +95,7 @@
         kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little
     );
 
-    if (!bitmapContext) { // Handle bitmap context creation failure
+    if (!bitmapContext) { 
         CFRelease(colorSpace);
         return;
     }
@@ -87,8 +113,21 @@
 
 @end
 
-int main(int argc __unused, char *argv[] __unused) {
-    NSApplication *app = [NSApplication sharedApplication]; // Use NSApplication
+int main(int argc, char *argv[]) {
+    uint32_t *back_buffer; 
+
+    while (1){
+        back_buffer = create_buffer(WIDTH, HEIGHT);
+        if (!back_buffer){
+            printf("back buffer allocation failed, retrying");
+        }
+        else{
+            break;
+        }
+    }
+
+
+    NSApplication *app = [NSApplication sharedApplication]; // Create the application
 
     NSRect rect = NSMakeRect(ORIGIN_X, ORIGIN_Y, WIDTH, HEIGHT);
 
@@ -103,9 +142,11 @@ int main(int argc __unused, char *argv[] __unused) {
     [window makeKeyAndOrderFront:nil];
 
     CustomView *view = [[CustomView alloc] initWithFrame:rect];
-    view.bitmap_buffer = create_buffer();
+    view.bitmap_buffer = back_buffer; 
     view.buffer_width = WIDTH;
     view.buffer_height = HEIGHT;
+    view.x_offset = 0;
+    view.y_offset = 0;
     [window setContentView:view];
 
     [app run];
