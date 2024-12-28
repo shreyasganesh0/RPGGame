@@ -2,6 +2,7 @@
 #define PIXEL_BUFFER_H
 #include <stdint.h>
 #include "types.h"
+
 typedef struct Pixel{
     uint8_t red;
     uint8_t green;
@@ -12,5 +13,8 @@ typedef struct Pixel{
         return pixel;
     }
 } pixel_t;
+
 void populate_buffer(uint32_t*, int, int);
+uint32_t * create_buffer(int width, int height);
+
 #endif

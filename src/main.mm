@@ -3,25 +3,8 @@
 #include <Cocoa/Cocoa.h> // Correct import (includes Foundation)
 #include "types.h"
 #include "pixel_buffer.h"
-#include <sys/mman.h>
 
-uint32_t * create_buffer(int width, int height){
-    size_t size = width*height*(sizeof(uint32_t));
-
-    uint32_t *buffer = (uint32_t *)mmap(NULL, // Let system choose address
-                                        size, 
-                                        PROT_READ | PROT_WRITE, // Memory protection: Read and Write
-                                        MAP_PRIVATE | MAP_ANON, // Anonymous mapping, not backed by a file
-                                        -1, // File desc (not used since MAP_ANON) 
-                                        0 // offset from address space 
-                                        );
-    if (buffer == MAP_FAILED){
-        return NULL;
-    }
-    return buffer;
-}
-
-
+// This is the Drawing logic portion
 @interface CustomView : NSView
 @property (nonatomic, retain) NSTimer *timer;
 @property uint32_t *bitmap_buffer;
@@ -33,10 +16,10 @@ uint32_t * create_buffer(int width, int height){
 
 @implementation CustomView
 
-- (instancetype)initWithFrame:(NSRect)frameRect {
+- (instancetype)initwithframe:(NSRect)frameRect {
     self = [super initWithFrame:frameRect];
     if (self) {
-        self.wantsLayer = NO; // Important for direct drawing
+        self.wantsLayer = NO; // important for direct drawing
         self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawDuringViewResize;
     }
     return self;
@@ -110,10 +93,19 @@ uint32_t * create_buffer(int width, int height){
     }
     CFRelease(colorSpace);
 }
-
 @end
 
-int main(int argc, char *argv[]) {
+
+// This is the starting point of applicaiton logic
+
+@interface AppDelegate : NSObject<NSApplicationDelegate, NSWindowDelegate>
+@property(strong, nonatomic) NSWindow *window;
+@end
+
+@implementation AppDelegate
+
+-(void)applicationDidFinishLaunching:(NSNotification *)notificaiton{
+
     uint32_t *back_buffer; 
 
     while (1){
@@ -126,9 +118,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-
-    NSApplication *app = [NSApplication sharedApplication]; // Create the application
-
     NSRect rect = NSMakeRect(ORIGIN_X, ORIGIN_Y, WIDTH, HEIGHT);
 
     NSWindowStyleMask style = (NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled);
@@ -138,9 +127,10 @@ int main(int argc, char *argv[]) {
                                                       backing:NSBackingStoreBuffered
                                                         defer:NO]; // Use NO, not false
 
-    [window setTitle:@"GameWindow"];
-    [window makeKeyAndOrderFront:nil];
-
+    [window setTitle : @"GameWindow"];
+    [window setDelegate : self];
+    [window makeKeyAndOrderFront : nil];
+    
     CustomView *view = [[CustomView alloc] initWithFrame:rect];
     view.bitmap_buffer = back_buffer; 
     view.buffer_width = WIDTH;
@@ -148,6 +138,25 @@ int main(int argc, char *argv[]) {
     view.x_offset = 0;
     view.y_offset = 0;
     [window setContentView:view];
+}
+
+-(BOOL)windowShouldClose:(NSWindow *)window{
+    NSLog(@"Window is closing");
+    //this is where any future logic for things to be done after the close button is hit should be done
+    [NSApp terminate:self];
+    return YES;
+}
+@end
+
+int main(int argc, char *argv[]) {
+
+
+
+    NSApplication *app = [NSApplication sharedApplication]; // Create the application
+
+    AppDelegate *delegate = [[AppDelegate alloc] init];
+
+    [app setDelegate: delegate];
 
     [app run];
     printf("My app is running\n"); // Add newline for clarity
