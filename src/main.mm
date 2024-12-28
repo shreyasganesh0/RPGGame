@@ -87,7 +87,7 @@
     CFRelease(bitmapContext);
 
     if (image) {
-        CGRect imageRect = CGRectMake(0, 0, self.buffer_width, self.buffer_height); // More descriptive name
+        CGRect imageRect = self.bounds; 
         CGContextDrawImage(context, imageRect, image);
         CFRelease(image);
     }
