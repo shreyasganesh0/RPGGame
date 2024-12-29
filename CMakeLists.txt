@@ -26,11 +26,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Gather all .cpp source files
+# Gather all .cpp and .mm source files
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp ${CMAKE_SOURCE_DIR}/src/*.mm)
 
-# Create the executable target
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+# Create the executable target as a macOS bundle
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${SOURCE_FILES})
 
 # Include directories for headers
 target_include_directories(${PROJECT_NAME}
@@ -45,6 +45,7 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 endif()
 
+# Link Cocoa framework (needed for macOS)
 if(APPLE)
     find_library(COCOA_LIBRARY Cocoa)
     if(COCOA_LIBRARY)
@@ -53,6 +54,11 @@ if(APPLE)
         message(FATAL_ERROR "Cocoa framework not found")
     endif()
 endif()
+
+# Specify Info.plist for the app bundle
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info.plist
+)
 
 # For debugging:
 # cmake -DCMAKE_BUILD_TYPE=Debug ..

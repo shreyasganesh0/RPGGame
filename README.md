@@ -31,7 +31,7 @@ cmake --build . --config Debug
 
 3. The binary/executable will be present in the ./build/bin directory of the project. 
 ```
-./bin/RPGDemo
+open bin/RPGGame.app
 ```
 
 ## Currently supports macOS 

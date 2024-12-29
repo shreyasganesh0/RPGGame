@@ -3,6 +3,7 @@
 #include <Cocoa/Cocoa.h> // Correct import (includes Foundation)
 #include "types.h"
 #include "pixel_buffer.h"
+#include <iostream>
 
 // This is the Drawing logic portion
 @interface CustomView : NSView
@@ -16,7 +17,7 @@
 
 @implementation CustomView
 
-- (instancetype)initwithframe:(NSRect)frameRect {
+- (instancetype)initWithFrame:(NSRect)frameRect {
     self = [super initWithFrame:frameRect];
     if (self) {
         self.wantsLayer = NO; // important for direct drawing
@@ -54,9 +55,6 @@
 
     populate_buffer(self.bitmap_buffer, self.x_offset, self.y_offset);
 
-    self.x_offset++;
-    self.y_offset++;
-
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setNeedsDisplay:YES]; // Redraw the entire view
     });
@@ -93,6 +91,55 @@
     }
     CFRelease(colorSpace);
 }
+
+
+-(void)keyDown:(NSEvent *)event{
+    if (![self.window isKeyWindow]) {
+        NSLog(@"Window is not key!");
+        return;
+    }
+    NSLog(@"Key pressed: %@", event.charactersIgnoringModifiers);
+    NSString *key = [event charactersIgnoringModifiers];
+    unichar key_val{};
+    if ([key length] > 0){
+        key_val = [key characterAtIndex:0];
+    }
+    else{
+        NSLog(@"Key not detected");
+    }
+
+    switch (key_val){
+        case NSUpArrowFunctionKey:
+        {
+            self.y_offset -=10;
+            break;
+        }
+        case NSDownArrowFunctionKey:
+        {
+            self.y_offset +=10;
+            break;
+        }
+        case NSRightArrowFunctionKey:
+        {
+            self.x_offset +=10;
+            break;
+        }
+        case NSLeftArrowFunctionKey:
+        {
+            self.x_offset -=10;
+            break;
+        }
+        default:
+        { // Handle any other key press with the default key
+            [super keyDown:event];
+            break;
+        }
+    }
+}
+
+
+//-(void)keyUp:(NSEvent *)event{} this can be implemented if we want to do stuff when the key is released
+
 @end
 
 
@@ -109,7 +156,7 @@
     uint32_t *back_buffer; 
 
     while (1){
-        back_buffer = create_buffer(WIDTH, HEIGHT);
+        back_buffer = create_buffer(BUFFER_WIDTH, BUFFER_HEIGHT);
         if (!back_buffer){
             printf("back buffer allocation failed, retrying");
         }
@@ -118,7 +165,7 @@
         }
     }
 
-    NSRect rect = NSMakeRect(ORIGIN_X, ORIGIN_Y, WIDTH, HEIGHT);
+    NSRect rect = NSMakeRect(ORIGIN_X, ORIGIN_Y, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     NSWindowStyleMask style = (NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled);
 
@@ -129,15 +176,19 @@
 
     [window setTitle : @"GameWindow"];
     [window setDelegate : self];
+    [NSApp activateIgnoringOtherApps:YES];
     [window makeKeyAndOrderFront : nil];
-    
+    if (![window isKeyWindow]) {
+        NSLog(@"Window failed to become key");
+    }
     CustomView *view = [[CustomView alloc] initWithFrame:rect];
     view.bitmap_buffer = back_buffer; 
-    view.buffer_width = WIDTH;
-    view.buffer_height = HEIGHT;
+    view.buffer_width = BUFFER_WIDTH;
+    view.buffer_height = BUFFER_HEIGHT;
     view.x_offset = 0;
     view.y_offset = 0;
     [window setContentView:view];
+    [window makeFirstResponder:view];
 }
 
 -(BOOL)windowShouldClose:(NSWindow *)window{
@@ -148,17 +199,31 @@
 }
 @end
 
+
+@interface CustomApplication : NSApplication
+@end
+
+@implementation CustomApplication
+- (void)sendEvent:(NSEvent *)event {
+    [super sendEvent:event];
+    if ([event type] == NSEventTypeKeyDown) {
+        NSLog(@"KeyDown at application level: %@", event.charactersIgnoringModifiers);
+    }
+}
+@end
+
+
+
+
 int main(int argc, char *argv[]) {
 
-
-
-    NSApplication *app = [NSApplication sharedApplication]; // Create the application
+    NSApplication *app = [CustomApplication sharedApplication]; // Create the application
 
     AppDelegate *delegate = [[AppDelegate alloc] init];
 
     [app setDelegate: delegate];
 
     [app run];
-    printf("My app is running\n"); // Add newline for clarity
+    
     return 0;
 }

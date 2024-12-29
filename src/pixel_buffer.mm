@@ -22,8 +22,8 @@ uint32_t * create_buffer(int width, int height){
 //Fill the initialzed buffer with color pixels
 
 void populate_buffer (uint32_t* back_buffer,int x_offset, int y_offset){
-    for(int y{0}; y<HEIGHT; y++){
-        for (int x{0}; x<WIDTH; x++){
+    for(int y{0}; y<BUFFER_HEIGHT; y++){
+        for (int x{0}; x<BUFFER_WIDTH; x++){
             uint8_t red = (x+x_offset)%256;
             uint8_t green{126};
             uint8_t blue = (y+y_offset)%256; 
@@ -32,7 +32,7 @@ void populate_buffer (uint32_t* back_buffer,int x_offset, int y_offset){
                     green,
                     blue,
                     };//TODO: check performance difference between pixel_t and directly assigning using manip of colors
-            back_buffer[y*(WIDTH)+int(x)] = pix;
+            back_buffer[y*(BUFFER_WIDTH)+int(x)] = pix;
         }
     }
     return;
