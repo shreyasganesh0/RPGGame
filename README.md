@@ -5,6 +5,12 @@
 This is my attempt at creating a 2D rpg from scratch without external libraries
 
 ## Getting Started
+To run a debug version of the appliction
+```
+./remake.sh
+```
+
+OR to build it yourself
 
 Create a build directory
 ```

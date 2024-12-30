@@ -1,6 +1,5 @@
 #ifndef TYPES_H
 #define TYPES_H
-#include <Cocoa/Cocoa.h>
 
 #define BUFFER_WIDTH 1280
 #define BUFFER_HEIGHT 720
