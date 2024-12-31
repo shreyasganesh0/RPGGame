@@ -36,10 +36,11 @@
     [self.timer invalidate];
     self.timer = nil;
 }
-
+// pixel drawing logic lies here
 - (void)timerFired:(NSTimer *)timer {
 
     populate_buffer(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height);
+    draw_circle(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, 300, 100, 100);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setNeedsDisplay:YES]; // Redraw the entire view
@@ -78,7 +79,7 @@
     CFRelease(colorSpace);
 }
 
-
+// user input from keyboard
 -(void)keyDown:(NSEvent *)event{
     if (![self.window isKeyWindow]) {
         NSLog(@"Window is not key!");
@@ -97,22 +98,22 @@
     switch (key_val){
         case NSUpArrowFunctionKey:
         {
-            self.y_offset -=10;
+            self.y_offset +=10;
             break;
         }
         case NSDownArrowFunctionKey:
         {
-            self.y_offset +=10;
+            self.y_offset -=10;
             break;
         }
         case NSRightArrowFunctionKey:
         {
-            self.x_offset +=10;
+            self.x_offset -=10;
             break;
         }
         case NSLeftArrowFunctionKey:
         {
-            self.x_offset -=10;
+            self.x_offset +=10;
             break;
         }
         default:
