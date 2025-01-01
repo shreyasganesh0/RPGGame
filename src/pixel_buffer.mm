@@ -66,9 +66,9 @@ void draw_circle (uint32_t* back_buffer, int x_offset, int y_offset, int buffer_
             if (std::sqrt(distance) <= float(radius)){
                 uint8_t red = x%256;
                 uint8_t  blue = 0;
-                uint8_t green = 100;
+                uint8_t green = 0;
                 pixel_t pix{ red, green ,blue};
-                back_buffer[y * buffer_width + x] = 0;
+                back_buffer[y * buffer_width + x] = pix;
             }
         }
     }

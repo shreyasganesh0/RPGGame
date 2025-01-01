@@ -38,9 +38,20 @@
 }
 // pixel drawing logic lies here
 - (void)timerFired:(NSTimer *)timer {
+   
+    int radius = 300;
+    int origin_x = 100;
+    int origin_y = 100; 
+    // scale the circle to the screen size
+    CGFloat scale_x = self.bounds.size.width / self.buffer_width;
+    CGFloat scale_y = self.bounds.size.height / self.buffer_height;
+
+    int scaled_radius = radius * MIN(scale_x, scale_y);
+    int scaled_origin_x = origin_x * scale_x;
+    int scaled_origin_y = origin_y * scale_y;
 
     populate_buffer(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height);
-    draw_circle(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, 300, 100, 100);
+    draw_circle(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, scaled_radius, scaled_origin_x, scaled_origin_y);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setNeedsDisplay:YES]; // Redraw the entire view
@@ -71,9 +82,30 @@
     CGImageRef image = CGBitmapContextCreateImage(bitmapContext);
     CFRelease(bitmapContext);
 
+
+
     if (image) {
-        CGRect imageRect = self.bounds; 
-        CGContextDrawImage(context, imageRect, image);
+
+        // scale the image drawn to have a fixed aspect ratio
+        CGFloat window_aspect = self.bounds.size.width / self.bounds.size.height;
+        CGFloat buffer_aspect = (CGFloat)self.buffer_width / (CGFloat)self.buffer_height;
+
+
+        CGRect image_rect;
+
+        if (window_aspect > buffer_aspect){
+
+            CGFloat width = self.bounds.size.height * buffer_aspect;
+            CGFloat x_offset = (self.bounds.size.width - width) / 2.0;
+            image_rect = CGRectMake(x_offset, 0, width, self.bounds.size.height);
+        }   
+        else{
+
+            CGFloat height = self.bounds.size.width / buffer_aspect;
+            CGFloat y_offset = (self.bounds.size.height - height) / 2.0;
+            image_rect = CGRectMake(0, y_offset, self.bounds.size.width, height);
+        }
+        CGContextDrawImage(context, image_rect, image);
         CFRelease(image);
     }
     CFRelease(colorSpace);
