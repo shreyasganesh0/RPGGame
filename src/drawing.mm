@@ -1,5 +1,7 @@
 #include "drawing.h"
 #include "pixel_buffer.h"
+#include "global.h"
+#include <string>
 
 @implementation CustomView
 
@@ -42,16 +44,17 @@
     int radius = 300;
     int origin_x = 100;
     int origin_y = 100; 
-    // scale the circle to the screen size
-    CGFloat scale_x = self.bounds.size.width / self.buffer_width;
-    CGFloat scale_y = self.bounds.size.height / self.buffer_height;
-
-    int scaled_radius = radius * MIN(scale_x, scale_y);
-    int scaled_origin_x = origin_x * scale_x;
-    int scaled_origin_y = origin_y * scale_y;
-
+    
+    scale_t scale;
+    scale.scale_x = self.bounds.size.width / self.buffer_width;
+    scale.scale_y = self.bounds.size.height / self.buffer_height;
+    
+    const char *c_path = [self.path fileSystemRepresentation]; // path to jpg to be loaded
+    
     populate_buffer(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height);
-    draw_circle(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, scaled_radius, scaled_origin_x, scaled_origin_y);
+    //draw_rectangle(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, 0,0, 100, 100);
+    load_image_to_buffer(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, c_path);
+    //draw_circle(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, radius, origin_x, origin_y, scale);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setNeedsDisplay:YES]; // Redraw the entire view
@@ -82,8 +85,6 @@
     CGImageRef image = CGBitmapContextCreateImage(bitmapContext);
     CFRelease(bitmapContext);
 
-
-
     if (image) {
 
         // scale the image drawn to have a fixed aspect ratio
@@ -106,7 +107,7 @@
             image_rect = CGRectMake(0, y_offset, self.bounds.size.width, height);
         }
         CGContextDrawImage(context, image_rect, image);
-        CFRelease(image);
+        
     }
     CFRelease(colorSpace);
 }

@@ -1,11 +1,11 @@
 #include "main.h"
 #include "pixel_buffer.h"
-
 @implementation AppDelegate
 
 -(void)applicationDidFinishLaunching:(NSNotification *)notificaiton{
 
     uint32_t *back_buffer; 
+    
 
     while (1){
         back_buffer = create_buffer(BUFFER_WIDTH, BUFFER_HEIGHT);
@@ -25,6 +25,11 @@
                                                     styleMask:style
                                                       backing:NSBackingStoreBuffered
                                                         defer:NO]; // Use NO, not false
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"Sprite_0001" ofType:@"png" inDirectory:@"assets"]; // assest path shifted to bin/RPGGame.app/Contents/Resources/assests according to macOS convention
+    if (!path){
+        NSLog(@"Path not found");
+        return;
+    }
 
     [window setTitle : @"GameWindow"];
     [window setDelegate : self];
@@ -34,7 +39,8 @@
         NSLog(@"Window failed to become key");
     }
     CustomView *view = [[CustomView alloc] initWithFrame:rect];
-    view.bitmap_buffer = back_buffer; 
+    view.bitmap_buffer = back_buffer;
+    view.path = path;
     view.buffer_width = BUFFER_WIDTH;
     view.buffer_height = BUFFER_HEIGHT;
     view.x_offset = 0;

@@ -84,6 +84,7 @@ Mkfile.old
 dkms.conf
 # Build directories
 build*/
+assets/
 bin/
 obj/
 
