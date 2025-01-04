@@ -6,7 +6,6 @@
 
     uint32_t *back_buffer; 
     
-
     while (1){
         back_buffer = create_buffer(BUFFER_WIDTH, BUFFER_HEIGHT);
         if (!back_buffer){
@@ -25,7 +24,7 @@
                                                     styleMask:style
                                                       backing:NSBackingStoreBuffered
                                                         defer:NO]; // Use NO, not false
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"Sprite_0001" ofType:@"png" inDirectory:@"assets"]; // assest path shifted to bin/RPGGame.app/Contents/Resources/assests according to macOS convention
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"Cerulean_City" ofType:@"png" inDirectory:@"assets"]; // assest path shifted to bin/RPGGame.app/Contents/Resources/assests according to macOS convention
     if (!path){
         NSLog(@"Path not found");
         return;

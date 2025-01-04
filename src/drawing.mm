@@ -50,10 +50,12 @@
     scale.scale_y = self.bounds.size.height / self.buffer_height;
     
     const char *c_path = [self.path fileSystemRepresentation]; // path to jpg to be loaded
-    
-    populate_buffer(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height);
+
+    buffer_t buffer = {self.bitmap_buffer, self.buffer_width, self.buffer_height};
+
+    populate_buffer(buffer, self.x_offset, self.y_offset);
     //draw_rectangle(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, 0,0, 100, 100);
-    load_image_to_buffer(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, c_path);
+    load_image_to_buffer(buffer, self.x_offset, self.y_offset,c_path);
     //draw_circle(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, radius, origin_x, origin_y, scale);
 
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -74,7 +76,7 @@
 
     CGContextRef bitmapContext = CGBitmapContextCreate(
         self.bitmap_buffer, self.buffer_width, self.buffer_height, 8, self.buffer_width * 4, colorSpace,
-        kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little
+        kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Little
     );
 
     if (!bitmapContext) { 
