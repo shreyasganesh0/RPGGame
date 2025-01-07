@@ -1,5 +1,6 @@
 #include "main.h"
 #include "pixel_buffer.h"
+#include "game_update.h"
 @implementation AppDelegate
 
 -(void)applicationDidFinishLaunching:(NSNotification *)notificaiton{
@@ -37,6 +38,7 @@
     if (![window isKeyWindow]) {
         NSLog(@"Window failed to become key");
     }
+    
     CustomView *view = [[CustomView alloc] initWithFrame:rect];
     view.bitmap_buffer = back_buffer;
     view.path = path;

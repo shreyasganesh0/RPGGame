@@ -17,10 +17,9 @@ typedef struct Pixel{
 } pixel_t;
 
 uint32_t * create_buffer(int width, int height);
-
-void populate_buffer(buffer_t &buffer, int, int);
-void draw_rectangle (buffer_t &buffer, int x_offset, int y_offset, int x_start, int y_start, int x_end, int y_end);
-void draw_circle (buffer_t &buffer, int x_offset, int y_offset, int radius, int origin_x, int origin_y, scale_t scale);
-void load_image_to_buffer (buffer_t &buffer, int x_offset, int y_offset, const char *file_path);
+void populate_buffer(buffer_t &buffer);
+void draw_rectangle (buffer_t &buffer, int x_start, int y_start, int x_end, int y_end);
+void draw_circle (buffer_t &buffer, int radius, int origin_x, int origin_y, scale_t scale);
+void load_image_to_buffer (buffer_t &buffer, const char *file_path);
 
 #endif

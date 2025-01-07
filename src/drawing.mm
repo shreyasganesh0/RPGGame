@@ -1,6 +1,7 @@
 #include "drawing.h"
 #include "pixel_buffer.h"
 #include "global.h"
+#include "game_update.h"
 #include <string>
 
 @implementation CustomView
@@ -41,22 +42,13 @@
 // pixel drawing logic lies here
 - (void)timerFired:(NSTimer *)timer {
    
-    int radius = 300;
-    int origin_x = 100;
-    int origin_y = 100; 
-    
     scale_t scale;
     scale.scale_x = self.bounds.size.width / self.buffer_width;
     scale.scale_y = self.bounds.size.height / self.buffer_height;
-    
-    const char *c_path = [self.path fileSystemRepresentation]; // path to jpg to be loaded
 
-    buffer_t buffer = {self.bitmap_buffer, self.buffer_width, self.buffer_height};
+    buffer_t buffer{self.bitmap_buffer, self.buffer_width, self.buffer_height};
 
-    populate_buffer(buffer, self.x_offset, self.y_offset);
-    //draw_rectangle(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, 0,0, 100, 100);
-    load_image_to_buffer(buffer, self.x_offset, self.y_offset,c_path);
-    //draw_circle(self.bitmap_buffer, self.x_offset, self.y_offset, self.buffer_width, self.buffer_height, radius, origin_x, origin_y, scale);
+    render_update_buffer(buffer);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setNeedsDisplay:YES]; // Redraw the entire view
@@ -92,7 +84,6 @@
         // scale the image drawn to have a fixed aspect ratio
         CGFloat window_aspect = self.bounds.size.width / self.bounds.size.height;
         CGFloat buffer_aspect = (CGFloat)self.buffer_width / (CGFloat)self.buffer_height;
-
 
         CGRect image_rect;
 
@@ -133,22 +124,26 @@
     switch (key_val){
         case NSUpArrowFunctionKey:
         {
-            self.y_offset +=10;
+            input.keys.set(2);
             break;
         }
         case NSDownArrowFunctionKey:
         {
-            self.y_offset -=10;
+            input.keys.set(2);
+            input.keys.set(0);
             break;
         }
         case NSRightArrowFunctionKey:
         {
-            self.x_offset -=10;
+            input.keys.set(1);
+            input.keys.set(2);
             break;
         }
         case NSLeftArrowFunctionKey:
         {
-            self.x_offset +=10;
+            input.keys.set(1);
+            input.keys.set(2);
+            input.keys.set(0);
             break;
         }
         default:
