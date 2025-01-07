@@ -27,7 +27,7 @@ uint32_t * create_buffer(int width, int height){
 
 //Fill the initialzed buffer with color pixels
 
-void populate_buffer (buffer_t &buffer, int x_offset, int y_offset){
+void populate_buffer (buffer_t &buffer){
     for(int y{0}; y< buffer.height; y++){
         for (int x{0}; x< buffer.width; x++){
             uint8_t red = (x-x_offset)%256;
@@ -47,7 +47,7 @@ void populate_buffer (buffer_t &buffer, int x_offset, int y_offset){
 
 }
 
-void draw_rectangle (buffer_t &buffer, int x_offset, int y_offset, int x_start, int y_start, int x_end, int y_end){
+void draw_rectangle (buffer_t &buffer, int x_start, int y_start, int x_end, int y_end){
     
     for (int y = 0; y < buffer.height; y++){
         for (int x = 0; x < buffer.width; x++){
@@ -63,7 +63,7 @@ void draw_rectangle (buffer_t &buffer, int x_offset, int y_offset, int x_start, 
 }
 
 
-void draw_circle (buffer_t buffer, int x_offset, int y_offset, int radius, int origin_x, int origin_y, scale_t scale){
+void draw_circle (buffer_t buffer, int radius, int origin_x, int origin_y, scale_t scale){
 
    
     // scale the circle to the screen size
@@ -86,7 +86,7 @@ void draw_circle (buffer_t buffer, int x_offset, int y_offset, int radius, int o
     }
 }
 
-void load_image_to_buffer (buffer_t &buffer, int x_offset, int y_offset, const char *file_path){
+void load_image_to_buffer (buffer_t &buffer, const char *file_path){
     if (!raw_pixels){ 
         CFStringRef path = CFStringCreateWithCString(kCFAllocatorDefault, file_path, kCFStringEncodingUTF8);
         CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, path, kCFURLPOSIXPathStyle, false);
