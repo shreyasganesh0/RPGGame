@@ -2,6 +2,7 @@
 #include "pixel_buffer.h"
 #include "global.h"
 #include "game_update.h"
+#include "game_update.h"
 #include <string>
 
 @implementation CustomView
@@ -48,6 +49,9 @@
 
     buffer_t buffer{self.bitmap_buffer, self.buffer_width, self.buffer_height};
 
+    buffer_t buffer{self.bitmap_buffer, self.buffer_width, self.buffer_height};
+
+    render_update_buffer(buffer);
     render_update_buffer(buffer);
 
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -123,8 +127,8 @@
 
     switch (key_val){
         case NSUpArrowFunctionKey:
-        {   input.keys.reset();
-            input.keys.set(2);
+        {
+            self.y_offset +=10;
             break;
         }
         case NSDownArrowFunctionKey:
