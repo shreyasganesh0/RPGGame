@@ -88,7 +88,14 @@ void draw_circle (buffer_t buffer, int radius, int origin_x, int origin_y, scale
 
 void load_image_to_buffer (buffer_t &buffer, const char *file_path){
     if (!raw_pixels){ 
-        CFStringRef path = CFStringCreateWithCString(kCFAllocatorDefault, file_path, kCFStringEncodingUTF8);
+        char absolute_path[PATH_MAX];
+            if (realpath(file_path, absolute_path) == NULL) {
+            printf("Path is: %s", absolute_path);
+            perror("Failed to resolve absolute path");
+            return;
+        }
+        
+        CFStringRef path = CFStringCreateWithCString(kCFAllocatorDefault, absolute_path, kCFStringEncodingUTF8);
         CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, path, kCFURLPOSIXPathStyle, false);
         CGImageSourceRef source = CGImageSourceCreateWithURL(url, nullptr);
     

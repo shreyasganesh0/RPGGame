@@ -1,6 +1,15 @@
 #include "main.h"
 #include "pixel_buffer.h"
 #include "game_update.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <chrono>
+#include <iomanip> // For std::put_time
+#include <sstream> // For std::ostringstream
+#include <fcntl.h>
+#include <unistd.h> // For dup2
+
 @implementation AppDelegate
 
 -(void)applicationDidFinishLaunching:(NSNotification *)notificaiton{
@@ -71,6 +80,32 @@
 
 
 int main(int argc, char *argv[]) {
+    auto now = std::chrono::system_clock::now();
+
+    // Convert to time_t to extract calendar time
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+
+    // Format the time using std::put_time and a stringstream
+    std::ostringstream datetime_stream;
+    datetime_stream << std::put_time(std::localtime(&now_time), "%Y-%m-%d_%H-%M-%S");
+
+    // Get the formatted date-time string
+    std::string datetime = datetime_stream.str();
+
+    // Construct the log file path
+    std::string log_path = "/Users/shreyas/Projects/Rpgdemo/logs/" + datetime + ".log";
+
+    // Open the log file
+    int out = open(log_path.c_str(), O_RDWR | O_CREAT | O_APPEND, 0600);
+    if (out == -1) {
+        perror("Failed to open log file");
+        return 1;
+    }
+
+    // Redirect stdout and stderr to the log file
+    dup2(out, STDOUT_FILENO);
+    dup2(out, STDERR_FILENO);
+    close(out);
 
     NSApplication *app = [CustomApplication sharedApplication]; // Create the application
 

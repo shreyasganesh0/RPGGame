@@ -2,6 +2,7 @@
 # remake the debug build directory
 
 echo "Started remake"
+
 rm -rf build-debug
 
 mkdir build-debug

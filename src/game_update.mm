@@ -27,7 +27,7 @@ void render_update_buffer (buffer_t &buffer){
             input.keys.set(2, false);
     } 
 
-    std::string path = "../Resources/assets/Sprite_0001.png";
+    const std::string path = "../Resources/assets/Cerulean_City.png";
     const char *c_path = path.c_str();
 
     populate_buffer(buffer);
