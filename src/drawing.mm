@@ -123,27 +123,24 @@
 
     switch (key_val){
         case NSUpArrowFunctionKey:
-        {   input.keys.reset();
+        {   
             input.keys.set(2);
             break;
         }
         case NSDownArrowFunctionKey:
         {
-           input.keys.reset();
             input.keys.set(2);
             input.keys.set(0);
             break;
         }
         case NSRightArrowFunctionKey:
         {
-           input.keys.reset();
             input.keys.set(1);
             input.keys.set(2);
             break;
         }
         case NSLeftArrowFunctionKey:
         {
-           input.keys.reset();
             input.keys.set(1);
             input.keys.set(2);
             input.keys.set(0);

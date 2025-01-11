@@ -1,5 +1,6 @@
 #include "main.h"
 #include "pixel_buffer.h"
+#include "global.h"
 #include "game_update.h"
 #include <iostream>
 #include <fstream>
@@ -34,11 +35,6 @@
                                                     styleMask:style
                                                       backing:NSBackingStoreBuffered
                                                         defer:NO]; // Use NO, not false
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"Cerulean_City" ofType:@"png" inDirectory:@"assets"]; // assest path shifted to bin/RPGGame.app/Contents/Resources/assests according to macOS convention
-    if (!path){
-        NSLog(@"Path not found");
-        return;
-    }
 
     [window setTitle : @"GameWindow"];
     [window setDelegate : self];
@@ -50,7 +46,6 @@
     
     CustomView *view = [[CustomView alloc] initWithFrame:rect];
     view.bitmap_buffer = back_buffer;
-    view.path = path;
     view.buffer_width = BUFFER_WIDTH;
     view.buffer_height = BUFFER_HEIGHT;
     view.x_offset = 0;
@@ -89,7 +84,7 @@ int main(int argc, char *argv[]) {
     std::ostringstream datetime_stream;
     datetime_stream << std::put_time(std::localtime(&now_time), "%Y-%m-%d_%H-%M-%S");
 
-    // Get the formatted date-time string
+    // Get the formatted date-time string[]
     std::string datetime = datetime_stream.str();
 
     // Construct the log file path
@@ -106,6 +101,16 @@ int main(int argc, char *argv[]) {
     dup2(out, STDOUT_FILENO);
     dup2(out, STDERR_FILENO);
     close(out);
+
+    std::vector<const char *> file_path_list;
+    const std::string path_1 = "/Users/shreyas/Projects/Rpgdemo/assets/Cerulean_City.png";
+    const std::string path_2 = "/Users/shreyas/Projects/Rpgdemo/assets/Sprite_0001.png";
+    file_path_list.push_back(path_1.c_str());
+    file_path_list.push_back(path_2.c_str());
+
+    for (auto &path : file_path_list){
+        load_image(path);
+    }
 
     NSApplication *app = [CustomApplication sharedApplication]; // Create the application
 

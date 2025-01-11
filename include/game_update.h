@@ -53,5 +53,12 @@ typedef struct RenderBuffer{
 
 } buffer_t;
 
+typedef struct Image{
+    const uint8_t *raw_pixels;
+    int width;
+    int height;
+    size_t bytes_per_row;
+} image_t;
+
 void render_update_buffer(buffer_t &buffer);
 #endif
