@@ -109,32 +109,32 @@ void load_image_to_buffer (buffer_t &buffer, image_t image, bool fg_marker){
                 //TODO: fix the color and blending
                 
                 // Retrieve premultiplied background pixel
-            pixel_t bg_pix = pixel_t::from_uint32(buffer.buffer[y * buffer.width + x]);
-            float bg_alpha = bg_pix.alpha / 255.0f;
-            float bg_red   = bg_pix.red   / 255.0f;
-            float bg_green = bg_pix.green / 255.0f;
-            float bg_blue  = bg_pix.blue  / 255.0f;
+                pixel_t bg_pix = pixel_t::from_uint32(buffer.buffer[y * buffer.width + x]);
+                float bg_alpha = bg_pix.alpha / 255.0f;
+                float bg_red   = bg_pix.red   / 255.0f * bg_alpha;
+                float bg_green = bg_pix.green / 255.0f * bg_alpha;
+                float bg_blue  = bg_pix.blue  / 255.0f * bg_alpha;
 
-            // Retrieve premultiplied foreground pixel (assuming ABGR order)
-            int src_idx = src_y * image.bytes_per_row + src_x * 4;
-            float fg_red = image.raw_pixels[src_idx] / 255.0f;
-            float fg_green  = image.raw_pixels[src_idx + 1] / 255.0f;
-            float fg_blue = image.raw_pixels[src_idx + 2] / 255.0f;
-            float fg_alpha  = image.raw_pixels[src_idx + 3] / 255.0f;
+                // Retrieve premultiplied foreground pixel (assuming ABGR order)
+                int src_idx = src_y * image.bytes_per_row + src_x * 4;
+                float fg_red = image.raw_pixels[src_idx] / 255.0f; //red
+                float fg_green  = image.raw_pixels[src_idx + 1] / 255.0f; //green
+                float fg_blue = image.raw_pixels[src_idx + 2] / 255.0f; //blue
+                float fg_alpha  = image.raw_pixels[src_idx + 3] / 255.0f; //alpha
 
-            // Perform premultiplied alpha blending
-            float out_alpha = fg_alpha + bg_alpha * (1.0f - fg_alpha);
-            float out_red   = fg_red   + bg_red   * (1.0f - fg_alpha);
-            float out_green = fg_green + bg_green * (1.0f - fg_alpha);
-            float out_blue  = fg_blue  + bg_blue  * (1.0f - fg_alpha);
+                // Perform premultiplied alpha blending
+                float out_alpha = fg_alpha + bg_alpha * (1.0f - fg_alpha);
+                float out_red   = fg_red   + bg_red   * (1.0f - fg_alpha);
+                float out_green = fg_green + bg_green * (1.0f - fg_alpha);
+                float out_blue  = fg_blue  + bg_blue  * (1.0f - fg_alpha);
 
-            pixel_t curr_pix{
-                uint8_t(out_alpha * 255.0f), // alpha
-                uint8_t(out_blue * 255.0f), // blue
-                uint8_t(out_green * 255.0f), // green
-                uint8_t(out_red * 255.0f) // red
-            };
-            buffer.buffer[y * buffer.width + x] = curr_pix;
+                pixel_t curr_pix{
+                    uint8_t (out_alpha * 255.0f), // alpha
+                    uint8_t(out_blue * 255.0f), // blue
+                    uint8_t(out_green * 255.0f), // green
+                    uint8_t(out_red * 255.0f) // red
+                };
+                buffer.buffer[y * buffer.width + x] = curr_pix;
 
             }
             else{

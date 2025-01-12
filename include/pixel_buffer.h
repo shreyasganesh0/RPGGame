@@ -17,10 +17,10 @@ typedef struct Pixel{
 
     static Pixel from_uint32(uint32_t pixel_value) { //from uint32_t to pixel_t
         return {
-            static_cast<uint8_t>((pixel_value >> 24) & 0xFF),  // alpha
-            static_cast<uint8_t>((pixel_value >> 16) & 0xFF), // blue
+            static_cast<uint8_t>(pixel_value & 0xFF),         // red
             static_cast<uint8_t>((pixel_value >> 8) & 0xFF),  // green
-            static_cast<uint8_t>(pixel_value & 0xFF)         // red
+            static_cast<uint8_t>((pixel_value >> 16) & 0xFF), // blue
+            static_cast<uint8_t>((pixel_value >> 24) & 0xFF),  // alpha
         };
     }
 } pixel_t;
