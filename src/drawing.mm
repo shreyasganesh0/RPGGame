@@ -69,7 +69,7 @@
     CGContextRef bitmapContext = CGBitmapContextCreate(
         self.bitmap_buffer, self.buffer_width, self.buffer_height, 8, self.buffer_width * 4, colorSpace,
         kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Little
-    );
+    ); // expects RGBA
 
     if (!bitmapContext) { 
         CFRelease(colorSpace);

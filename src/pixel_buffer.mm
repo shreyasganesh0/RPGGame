@@ -1,6 +1,7 @@
 #include "pixel_buffer.h"
 #include "global.h"
 #include "drawing.h"
+#include "support.h"
 #include <cmath>
 #include <algorithm>
 #include <sys/mman.h>
@@ -107,38 +108,41 @@ void load_image_to_buffer (buffer_t &buffer, image_t image, bool fg_marker){
 
                 //TODO: fix the color and blending
                 
-                pixel_t bg_pix = pixel_t::from_uint32(buffer.buffer[y * buffer.width + x]);
+                // Retrieve premultiplied background pixel
+            pixel_t bg_pix = pixel_t::from_uint32(buffer.buffer[y * buffer.width + x]);
+            float bg_alpha = bg_pix.alpha / 255.0f;
+            float bg_red   = bg_pix.red   / 255.0f;
+            float bg_green = bg_pix.green / 255.0f;
+            float bg_blue  = bg_pix.blue  / 255.0f;
 
-                uint8_t old_alpha = bg_pix.alpha;
-                uint8_t bg_blue = bg_pix.blue;
-                uint8_t bg_green = bg_pix.green;
-                uint8_t bg_red = bg_pix.red;
+            // Retrieve premultiplied foreground pixel (assuming ABGR order)
+            int src_idx = src_y * image.bytes_per_row + src_x * 4;
+            float fg_red = image.raw_pixels[src_idx] / 255.0f;
+            float fg_green  = image.raw_pixels[src_idx + 1] / 255.0f;
+            float fg_blue = image.raw_pixels[src_idx + 2] / 255.0f;
+            float fg_alpha  = image.raw_pixels[src_idx + 3] / 255.0f;
 
-                int src_idx = src_y * image.bytes_per_row + src_x * 4;
+            // Perform premultiplied alpha blending
+            float out_alpha = fg_alpha + bg_alpha * (1.0f - fg_alpha);
+            float out_red   = fg_red   + bg_red   * (1.0f - fg_alpha);
+            float out_green = fg_green + bg_green * (1.0f - fg_alpha);
+            float out_blue  = fg_blue  + bg_blue  * (1.0f - fg_alpha);
 
-                uint8_t blue = image.raw_pixels[src_idx];
-                uint8_t green = image.raw_pixels[src_idx + 1];
-                uint8_t red = image.raw_pixels[src_idx + 2];
-                uint8_t alpha = image.raw_pixels[src_idx + 3];
+            pixel_t curr_pix{
+                uint8_t(out_alpha * 255.0f), // alpha
+                uint8_t(out_blue * 255.0f), // blue
+                uint8_t(out_green * 255.0f), // green
+                uint8_t(out_red * 255.0f) // red
+            };
+            buffer.buffer[y * buffer.width + x] = curr_pix;
 
-                //pixel blending 
-                float fg_alpha = alpha/255.0f;
-                float bg_alpha = old_alpha/255.0f;
-                
-                uint8_t out_alpha = uint8_t((fg_alpha + bg_alpha * (1 - fg_alpha) * 255.0f));
-                uint8_t out_red = uint8_t((red * fg_alpha) + (bg_red * (1 - fg_alpha)));
-                uint8_t out_blue = uint8_t((blue * fg_alpha) + (bg_blue * (1 - fg_alpha)));
-                uint8_t out_green = uint8_t((green * fg_alpha) + (bg_green * (1 - fg_alpha)));
-
-                pixel_t curr_pix{out_blue, out_green, out_red, out_alpha};
-                buffer.buffer[y * buffer.width + x] = curr_pix;
             }
             else{
                 //pixel_t pix{0, 0, 0};
                 //buffer[y * buffer_width + x] = pix;
             }
         }
-    }
+    }  
 }
 
 void load_image(const char *file_path){
@@ -176,6 +180,9 @@ void load_image(const char *file_path){
     image.width = (CGImageGetWidth(image_ref));
     image.height = (CGImageGetHeight(image_ref));
     image.bytes_per_row = (CGImageGetBytesPerRow(image_ref));
+    CGBitmapInfo bitmap_info = CGImageGetBitmapInfo(image_ref);
+    
+    decodeBitmapInfo(bitmap_info);
     CFRelease(source);
     CFRelease(url);
     CFRelease(path);
