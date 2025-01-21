@@ -1,4 +1,5 @@
 #include "support.h"
+#include "global.h"
 
 void decodeBitmapInfo(CGBitmapInfo info) {
     // Decode alpha info (lower bits)
@@ -48,3 +49,5 @@ void decodeBitmapInfo(CGBitmapInfo info) {
             break;
     }
 }
+
+

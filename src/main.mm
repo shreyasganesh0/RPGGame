@@ -1,7 +1,3 @@
-#include "main.h"
-#include "pixel_buffer.h"
-#include "global.h"
-#include "game_update.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -10,6 +6,11 @@
 #include <sstream> // For std::ostringstream
 #include <fcntl.h>
 #include <unistd.h> // For dup2
+
+#include "main.h"
+#include "pixel_buffer.h"
+#include "global.h"
+#include "game_update.h"
 
 @implementation AppDelegate
 
@@ -109,7 +110,7 @@ int main(int argc, char *argv[]) {
     file_path_list.push_back(path_2.c_str());
 
     for (auto &path : file_path_list){
-        load_image(path);
+        load_image(path); //TODO: this allocates entire image values that need to be unallocated so free before pop when it comes to it
     }
 
     NSApplication *app = [CustomApplication sharedApplication]; // Create the application

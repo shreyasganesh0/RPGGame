@@ -28,7 +28,7 @@ void render_update_buffer (buffer_t &buffer){
     
     // load images from the image list onto the screen
     bool fg_marker = false;
-    for (int i = 0; i < image_list.size(); i++){ 
+    for (size_t i = 0; i < image_list.size(); i++){ 
         if (i > 0){
             fg_marker = true;
         }
