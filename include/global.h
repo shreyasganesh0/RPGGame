@@ -12,4 +12,5 @@ extern int y_offset;
 extern std::vector<image_t> image_list;
 extern CFDataRef g_image_data;
 extern input_keys_t input;
+extern char *json_string;
 #endif

@@ -78,7 +78,7 @@ void arena_reset(arena_t *arena){
     while(temp_arena){
         arena_t* curr_arena = temp_arena;
         temp_arena = temp_arena->next_arena;
-        free(curr_arena);
+        munmap(curr_arena);
     }
 
     arena->base = arena->current;
@@ -95,10 +95,10 @@ void arena_free(arena_t *arena){
     while(temp_arena){
         arena_t* curr_arena = temp_arena;
         temp_arena = temp_arena->next_arena;
-        free(curr_arena);
+        munmap(curr_arena);
     }
 
-    free(arena);
+    munmap(arena);
     return;
 }
         

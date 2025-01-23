@@ -15,7 +15,7 @@ typedef struct Arena {
    size_t capacity; 
 } arena_t;
 
-void arena_init(arena_t *arena, size_t capacity);
+void arena_init(arena_t *arena, size_t num_pages);
 
 void *arena_alloc(arena_t *arena, size_t size);
 
