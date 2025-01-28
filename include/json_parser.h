@@ -8,12 +8,14 @@ typedef struct {
 } kv_t;
 
 typedef struct {
-kv_t **key_values; // stores a list of key values
+    kv_t **key_values; // stores a list of key values
+    size_t capacity;
     size_t count;
 } object_t;
 
 typedef struct { 
     object_t **objects; // stores a list of objects (for now)
+    size_t capacity;
     size_t count;
 } array_t;
 
