@@ -184,38 +184,45 @@ object_t *parse_object(arena_t *arena){
 
     skip_whitespace();
 
-    if (*json_string != '\"'){
-        printf("Key wasnt proper\n");
-        return NULL;
-    }
-    else {
-        char *ret_str = parse_string(arena);
-        if (ret_str == NULL){
-            printf("Error parsing string in object\n");
+    while(1){
+
+        kv_t *curr_kv = (kv_t *)arena_alloc(arena, sizeof(kv_t));
+
+        if (*json_string != '\"'){
+            printf("Key wasnt proper\n");
             return NULL;
-    }
-    
-    skip_whitespace();
-
-    if (*json_string != :){
-
-        printf("Sepreator for the key value wsnt present\n");
-        return NULL;
-    }
-
-    json_string++; // Consume :
-    skip_whiltespace();
-
-        if (*json_string == '\"'){
+        }
+        else {
             char *ret_str = parse_string(arena);
             if (ret_str == NULL){
                 printf("Error parsing string in object\n");
                 return NULL;
+            curr_kv->key = ret_str;
+        }
+        
+        skip_whitespace();
+
+        if (*json_string != :){
+
+            printf("Sepreator for the key value wsnt present\n");
+            return NULL;
+        }
+
+        json_string++; // Consume :
+        skip_whiltespace();
+
+        value_t *val = (value_t *)arena_alloc(arena, sizeof(value_t));
+        if (*json_string == '\"'){
+            val->string_v = parse_string(arena);
+            if (ret_str == NULL){
+                printf("Error parsing string in object\n");
+                return NULL;
             } 
+
         }
         else if (*json_string == '{'){
         
-            object_t *ret_obj = parse_object(arena);
+            val->object_v = parse_object(arena);
             if (ret_obj == NULL){
                 printf("Error parsing string in object\n");
                 return NULL;
@@ -223,7 +230,7 @@ object_t *parse_object(arena_t *arena){
         }
         else if (*json_string == '['){
         
-            array_t *ret_array = parse_array(arena);
+            val->array_v = parse_array(arena);
             if (ret_array == NULL){
                 printf("Error parsing string in object\n");
                 return NULL;
@@ -231,7 +238,7 @@ object_t *parse_object(arena_t *arena){
         }
         
         else if (isdigit(*json_string)){
-            int *ret_num = parse_number(arena);
+            val->number_v = parse_number(arena);
             if (ret_num == NULL){
                 printf("Error parsing string in object\n");
                 return NULL;
@@ -241,5 +248,7 @@ object_t *parse_object(arena_t *arena){
             printf("Invalid value found while parsing object\n");
             return NULL;
         }
+
+
             
 
